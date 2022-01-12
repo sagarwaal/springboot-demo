@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import microservices.book.socialmultiplication.domain.Multiplication;
 import org.springframework.util.Assert;
 
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 
@@ -45,6 +46,7 @@ public class MultiplicationServiceImpl implements MultiplicationService {
     }
 
     @Override
+    @Transactional
     public boolean checkMultiplicationAttempt(MultiplicationResultAttempt resultAttempt) {
 
         Assert.isTrue(!resultAttempt.isCorrect(), "Can't send an attempt marked as correct");
