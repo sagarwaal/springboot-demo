@@ -13,4 +13,5 @@ public enum Badge {
     // Badges won under some condition
     FIRST_ATTEMPT,
     FIRST_WON,
+    LUCKY_NUMBER,
 }

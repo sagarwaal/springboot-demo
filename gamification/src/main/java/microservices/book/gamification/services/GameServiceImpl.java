@@ -1,6 +1,8 @@
 package microservices.book.gamification.services;
 
 import lombok.extern.slf4j.Slf4j;
+import microservices.book.gamification.client.MultiplicationResultAttemptClient;
+import microservices.book.gamification.client.dto.MultiplicationResultAttempt;
 import microservices.book.gamification.domain.Badge;
 import microservices.book.gamification.domain.BadgeCard;
 import microservices.book.gamification.domain.GameStats;
@@ -18,12 +20,19 @@ import java.util.stream.Collectors;
 @Slf4j
 public class GameServiceImpl implements GameService {
 
+    private static final int LUCKY_NUMBER = 42;
+
     private ScoreCardRepository scoreCardRepository;
     private BadgeCardRepository badgeCardRepository;
+    private MultiplicationResultAttemptClient multiplicationResultAttemptClient;
 
-    public GameServiceImpl(ScoreCardRepository scoreCardRepository, BadgeCardRepository badgeCardRepository) {
+    public GameServiceImpl(
+            ScoreCardRepository scoreCardRepository,
+            BadgeCardRepository badgeCardRepository,
+            MultiplicationResultAttemptClient multiplicationResultAttemptClient) {
         this.scoreCardRepository = scoreCardRepository;
         this.badgeCardRepository = badgeCardRepository;
+        this.multiplicationResultAttemptClient = multiplicationResultAttemptClient;
     }
 
     @Override
@@ -54,6 +63,15 @@ public class GameServiceImpl implements GameService {
 
         List<ScoreCard> scoreCardList = scoreCardRepository.findByUserIdOrderByScoreTimestampDesc(userId);
         List<BadgeCard> badgeCardList = badgeCardRepository.findByUserIdOrderByBadgeTimestampDesc(userId);
+
+        MultiplicationResultAttempt attempt = multiplicationResultAttemptClient.retrieveMultiplicationResultAttemptById(attemptId);
+
+        if ((attempt.getMultiplicationFactorA() == LUCKY_NUMBER
+                || attempt.getMultiplicationFactorB() == LUCKY_NUMBER)
+                && !containsBadge(badgeCardList, Badge.LUCKY_NUMBER)) {
+            BadgeCard luckyNumberBadge = giveBadgeToUser(Badge.LUCKY_NUMBER, userId);
+            badgeCards.add(luckyNumberBadge);
+        }
 
         checkAndGiveBadgeBasedOnScore(badgeCardList, Badge.BRONZE_MULTIPLICATOR, totalScore, 100, userId)
                 .ifPresent(badgeCards::add);

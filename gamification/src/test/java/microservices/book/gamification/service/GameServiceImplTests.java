@@ -1,5 +1,7 @@
 package microservices.book.gamification.service;
 
+import microservices.book.gamification.client.MultiplicationResultAttemptClient;
+import microservices.book.gamification.client.dto.MultiplicationResultAttempt;
 import microservices.book.gamification.domain.Badge;
 import microservices.book.gamification.domain.BadgeCard;
 import microservices.book.gamification.domain.GameStats;
@@ -11,18 +13,14 @@ import microservices.book.gamification.services.GameServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.ArgumentMatcher;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -41,12 +39,15 @@ public class GameServiceImplTests {
     @Mock
     private BadgeCardRepository badgeCardRepository;
 
+    @Mock
+    private MultiplicationResultAttemptClient multiplicationResultAttemptClient;
+
     private GameService gameServiceImpl;
 
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
-        this.gameServiceImpl = new GameServiceImpl(scoreCardRepository, badgeCardRepository);
+        this.gameServiceImpl = new GameServiceImpl(scoreCardRepository, badgeCardRepository, multiplicationResultAttemptClient);
     }
 
     @Test
@@ -67,6 +68,11 @@ public class GameServiceImplTests {
     @Test
     public void checkNewAttemptForUserGoldBadge() throws Exception{
         checkForBadge(1L, Badge.GOLD_MULTIPLICATOR, 200);
+    }
+
+    @Test
+    public void checkNewAttemptForUserLuckyNumberBadge() throws Exception{
+        checkForBadge(1L, Badge.LUCKY_NUMBER, 20);
     }
 
     @Test
@@ -100,6 +106,12 @@ public class GameServiceImplTests {
         ScoreCard lastScoreCard = scoreCards.get(scoreCards.size() - 1);
 
         List<BadgeCard> alreadyPresentBadges = new ArrayList<>();
+
+        int factorA = 10;
+        int factorB = badge == Badge.LUCKY_NUMBER ? 42 : 30;
+        MultiplicationResultAttempt resultAttempt = new MultiplicationResultAttempt("John", factorA, factorB, 10, true);
+
+        given(multiplicationResultAttemptClient.retrieveMultiplicationResultAttemptById(lastScoreCard.getAttemptId())).willReturn(resultAttempt);
         given(scoreCardRepository.findByUserIdOrderByScoreTimestampDesc(userId)).willReturn(scoreCards);
         given(scoreCardRepository.getTotalScoreForUser(userId)).willReturn(totalScore);
         given(badgeCardRepository.findByUserIdOrderByBadgeTimestampDesc(userId)).willReturn(alreadyPresentBadges);
