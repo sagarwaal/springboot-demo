@@ -24,6 +24,6 @@ public class EventHandler {
         } catch (final Exception exception) {
             log.error("Error while processing MultiplicationSolvedEvent", exception);
             throw new AmqpRejectAndDontRequeueException(exception);
-        }cd code
+        }
     }
 }
