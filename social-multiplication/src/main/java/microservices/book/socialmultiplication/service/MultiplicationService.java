@@ -8,6 +8,7 @@ import java.util.List;
 public interface MultiplicationService {
     /**
      * Generates a {@link Multiplication} object
+     *
      * @return a {@link Multiplication} of randomly generated numbers
      */
     Multiplication createRandomMultiplication();
@@ -24,4 +25,10 @@ public interface MultiplicationService {
      * @return list of 5 attempts of user
      */
     List<MultiplicationResultAttempt> getStatsForUser(String userAlias);
+
+    /**
+     * @param id of the {@link MultiplicationResultAttempt}
+     * @return {@link MultiplicationResultAttempt}
+     */
+    MultiplicationResultAttempt getMultiplicationResultAttempt(final Long id);
 }

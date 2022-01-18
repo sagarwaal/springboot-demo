@@ -94,7 +94,7 @@ public class MultiplicationServiceImplTests {
     }
 
     @Test
-    public void retrieveStatsTest(){
+    public void retrieveStatsTest() {
         Multiplication multiplication = new Multiplication(50, 60);
         User user = new User("John");
         MultiplicationResultAttempt attempt1 = new MultiplicationResultAttempt(user, multiplication, 3010, false);
@@ -110,5 +110,19 @@ public class MultiplicationServiceImplTests {
         List<MultiplicationResultAttempt> latestAttempts = multiplicationServiceImpl.getStatsForUser("John");
 
         assertIterableEquals(attemptList, latestAttempts);
+    }
+
+    @Test
+    public void getMultiplicationResultAttempt() {
+        Multiplication multiplication = new Multiplication(50, 60);
+        User user = new User("John");
+        MultiplicationResultAttempt attempt = new MultiplicationResultAttempt(user, multiplication, 3010, false);
+
+        Long id = 1L;
+        given(multiplicationResultAttemptRepository.findById(id)).willReturn(Optional.of(attempt));
+
+        MultiplicationResultAttempt resultAttempt = multiplicationServiceImpl.getMultiplicationResultAttempt(id);
+
+        assertEquals(attempt, resultAttempt);
     }
 }

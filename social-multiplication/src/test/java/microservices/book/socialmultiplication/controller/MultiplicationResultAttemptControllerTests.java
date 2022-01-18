@@ -56,7 +56,7 @@ public class MultiplicationResultAttemptControllerTests {
     }
 
     @Test
-    public void getUserStats() throws Exception{
+    public void getUserStats() throws Exception {
         Multiplication multiplication = new Multiplication(50, 60);
         User user = new User("John");
         MultiplicationResultAttempt attempt1 = new MultiplicationResultAttempt(user, multiplication, 3010, false);
@@ -71,6 +71,38 @@ public class MultiplicationResultAttemptControllerTests {
 
         assertEquals(HttpStatus.OK.value(), response.getStatus(), "Expected OK response code");
         assertEquals(jsonResultAttemptList.write(attemptList).getJson(), response.getContentAsString());
+    }
+
+    @Test
+    public void getMultiplicationResultAttempt() throws Exception {
+        Multiplication multiplication = new Multiplication(50, 60);
+        User user = new User("John");
+        MultiplicationResultAttempt attempt = new MultiplicationResultAttempt(user, multiplication, 3010, false);
+
+        Long id = 1L;
+
+        given(multiplicationService.getMultiplicationResultAttempt(id)).willReturn(attempt);
+
+        String urlTemplate = String.format("/results/%s", id.toString());
+        MockHttpServletResponse response = mvc.perform(MockMvcRequestBuilders.get(urlTemplate))
+                .andReturn().getResponse();
+
+        assertEquals(HttpStatus.OK.value(), response.getStatus());
+        assertEquals(jsonResult.write(attempt).getJson(), response.getContentAsString());
+    }
+
+    @Test
+    public void getMultiplicationResultAttemptNotFound() throws Exception {
+
+        Long id = 1L;
+        given(multiplicationService.getMultiplicationResultAttempt(id)).willReturn(null);
+
+        String urlTemplate = String.format("/results/%s", id.toString());
+        MockHttpServletResponse response = mvc.perform(MockMvcRequestBuilders.get(urlTemplate))
+                .andReturn().getResponse();
+
+        assertEquals(HttpStatus.NOT_FOUND.value(), response.getStatus());
+        assertEquals("", response.getContentAsString());
     }
 
     void genericParameterizedTest(final boolean correct) throws Exception {

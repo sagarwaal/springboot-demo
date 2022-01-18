@@ -6,8 +6,10 @@ import lombok.RequiredArgsConstructor;
 import microservices.book.socialmultiplication.domain.MultiplicationResultAttempt;
 import microservices.book.socialmultiplication.service.MultiplicationService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import javax.xml.transform.Result;
 import java.util.List;
@@ -37,5 +39,16 @@ final class MultiplicationResultAttemptController {
     @GetMapping
     ResponseEntity<List<MultiplicationResultAttempt>> getStatistics(@RequestParam("alias") String alias) {
         return ResponseEntity.ok(multiplicationService.getStatsForUser(alias));
+    }
+
+    @GetMapping("/{resultId}")
+    ResponseEntity<MultiplicationResultAttempt> getMultiplicationAttempt(@PathVariable("resultId") Long id) {
+        MultiplicationResultAttempt resultAttempt = multiplicationService.getMultiplicationResultAttempt(id);
+
+        if (resultAttempt == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
+
+        return ResponseEntity.ok(resultAttempt);
     }
 }
