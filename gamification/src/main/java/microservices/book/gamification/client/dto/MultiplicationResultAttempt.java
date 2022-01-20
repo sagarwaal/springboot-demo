@@ -5,12 +5,13 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
+import microservices.book.gamification.client.MultiplicationResultAttemptDeserializer;
 
 @RequiredArgsConstructor
 @Getter
 @ToString
 @EqualsAndHashCode
-@JsonDeserialize()
+@JsonDeserialize(using = MultiplicationResultAttemptDeserializer.class)
 public final class MultiplicationResultAttempt {
 
     private final String userAlias;

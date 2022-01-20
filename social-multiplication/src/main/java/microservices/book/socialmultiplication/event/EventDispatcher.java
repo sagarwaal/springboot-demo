@@ -28,6 +28,6 @@ public class EventDispatcher {
     }
 
     public void send(final MultiplicationSolvedEvent multiplicationSolvedEvent) {
-        this.rabbitTemplate.convertAndSend(multiplicationSolvedEvent);
+        this.rabbitTemplate.convertAndSend(multiplicationExchange, multiplicationSolvedRoutingKey, multiplicationSolvedEvent);
     }
 }

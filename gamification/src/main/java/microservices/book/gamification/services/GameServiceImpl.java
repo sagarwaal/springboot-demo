@@ -65,6 +65,7 @@ public class GameServiceImpl implements GameService {
         List<BadgeCard> badgeCardList = badgeCardRepository.findByUserIdOrderByBadgeTimestampDesc(userId);
 
         MultiplicationResultAttempt attempt = multiplicationResultAttemptClient.retrieveMultiplicationResultAttemptById(attemptId);
+        log.info("Retrieved attempt AttemptId: {} FactorA: {} FactorB: {}", attemptId, attempt.getMultiplicationFactorA(), attempt.getMultiplicationFactorB());
 
         if ((attempt.getMultiplicationFactorA() == LUCKY_NUMBER
                 || attempt.getMultiplicationFactorB() == LUCKY_NUMBER)
